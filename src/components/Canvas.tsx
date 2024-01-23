@@ -14,8 +14,10 @@ export default function Canvas() {
 
 	const [position, setPosition] = useState({ x: 0, y: 0 });
 	const [redSquares, setRedSquares] = useState([]); // State to store red squares
+	const [mode, setMode] = useState("edit");
+	const [isMousePressed, setIsMousePressed] = useState(false);
 
-	function handleStageClick(e) {
+	const handleStageClick = e => {
 		let x = stageRef.current.getPointerPosition().x;
 		let y = stageRef.current.getPointerPosition().y;
 		let squareOriginX = Math.floor(x / stepSize) * stepSize;
@@ -30,19 +32,29 @@ export default function Canvas() {
 			height: stepSize,
 		};
 
-		// Add the newRect to the redSquares array
-		if (redSquares.filter(rect => rect.id === newRect.id).length === 0) {
-			setRedSquares(prevRedSquares => [...prevRedSquares, newRect]);
+		// Edit Mode: Add new rectangle
+		if (mode === "edit" && isMousePressed) {
+			if (redSquares.filter(rect => rect.id === newRect.id).length === 0) {
+				setRedSquares(prevRedSquares => [...prevRedSquares, newRect]);
+			}
 		}
-	}
+
+		// Erase Mode: Remove existing rectangle
+		if (mode === "erase" && isMousePressed) {
+			setRedSquares(prevRedSquares => prevRedSquares.filter(rect => rect.id !== newRect.id));
+		}
+	};
 	useEffect(() => {
 		// Log the updated state after it has been applied
 		console.log(redSquares);
 	}, [redSquares]);
-	function handleRectClick(id) {
+
+	const handleRectClick = id => {
 		// Filter out the clicked square from redSquares
-		setRedSquares(prevRedSquares => prevRedSquares.filter(rect => rect.id !== id));
-	}
+		if (mode === "erase") {
+			setRedSquares(prevRedSquares => prevRedSquares.filter(rect => rect.id !== id));
+		}
+	};
 
 	useEffect(() => {
 		if (gridLayerRef.current) {
@@ -51,8 +63,24 @@ export default function Canvas() {
 	}, [canvasDimensions, redSquares]);
 
 	return (
-		<div className='flex flex-col align-center justify-center items-center'>
-			<Stage ref={stageRef} width={canvasDimensions.width} height={canvasDimensions.height} scaleX={1} scaleY={1} onClick={handleStageClick}>
+		<div className='flex flex-row align-center justify-center items-center'>
+			<div className='flex flex-col'>
+				<button className={`rounded-lg text-white p-4 ${mode === "edit" ? "bg-blue-700" : "bg-blue-300"}`} onClick={() => setMode("edit")}>
+					Edit Mode
+				</button>
+				<button onClick={() => setMode("erase")}>Erase Mode</button>
+			</div>
+			<Stage
+				ref={stageRef}
+				width={canvasDimensions.width}
+				height={canvasDimensions.height}
+				scaleX={1}
+				scaleY={1}
+				onClick={handleStageClick}
+				onMouseDown={() => setIsMousePressed(true)}
+				onMouseUp={() => setIsMousePressed(false)}
+				onMouseMove={handleStageClick} // Use handleStageClick for continuous placement
+			>
 				{/* Grid Layer */}
 				<Layer ref={gridLayerRef} x={position.x} y={position.y}>
 					{Array.from({ length: 1024 / stepSize }).map((_, i) => (
