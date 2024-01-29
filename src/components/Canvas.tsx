@@ -92,7 +92,7 @@ export default function Canvas() {
 
 					{/* Red Squares */}
 					{redSquares.map(rect => (
-						<Rect key={rect.id} x={rect.x} y={rect.y} width={rect.width} height={rect.height} fill='red' onClick={() => handleRectClick(rect.id)} />
+						<Rect key={rect.id} x={rect.x} y={rect.y} width={rect.width} height={rect.height} fill='red' onContextMenu={() => console.log("hi")} onClick={() => handleRectClick(rect.id)} />
 					))}
 				</Layer>
 			</Stage>
