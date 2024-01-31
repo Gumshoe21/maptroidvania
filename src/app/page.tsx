@@ -7,6 +7,6 @@ const Canvas = dynamic(() => import("../components/Canvas"), {
 });
 
 export default function Page() {
-	// return <Canvas />;
-	return <Counter />;
+	return <Canvas />;
+	// return <Counter />;
 }
