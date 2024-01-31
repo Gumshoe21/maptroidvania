@@ -3,6 +3,7 @@ import { useRef, useEffect, useState } from "react";
 import Konva from "konva";
 const stepSize = 32;
 import { toolSlice, canvasSlice, gridSlice, useSelector, useDispatch, selectToolName, selectCanvasDimensions, selectCanvasScale, selectGridCells } from "@/lib/redux";
+import { Button } from "@/components/ui/button";
 
 export function Grid() {
 	const gridLayerRef = useRef<Konva.Layer>(null);
@@ -49,10 +50,12 @@ export function Grid() {
 				<div className='flex flex-col'>
 					{/* TODO change mode to redux state */}
 					{/* TODO change setMode to redux state */}
-					<button className={`rounded-lg text-white p-4 ${toolName === "edit" ? "bg-blue-700" : "bg-blue-300"}`} onClick={() => dispatch(toolSlice.actions.setEdit())}>
-						Edit Mode
-					</button>
-					<button onClick={() => dispatch(toolSlice.actions.setEraser())}>Erase Mode</button>
+					<Button variant={toolName === "edit" ? "default" : "secondary"} onClick={() => dispatch(toolSlice.actions.setEdit())}>
+						Edit
+					</Button>
+					<Button variant={toolName === "eraser" ? "default" : "secondary"} onClick={() => dispatch(toolSlice.actions.setEraser())}>
+						Eraser
+					</Button>
 				</div>
 				<Stage ref={stageRef} width={canvasDimensions.width} height={canvasDimensions.height} scaleX={canvasScale.x} scaleY={canvasScale.y} onMouseDown={() => setIsMousePressed(true)} onMouseUp={() => setIsMousePressed(false)} onClick={handleGridClick} onMouseMove={handleGridClick}>
 					<Layer ref={gridLayerRef} x={position.x} y={position.y}>
